@@ -1,0 +1,30 @@
+name = "muse-fitness-studio"
+main = "server/worker.js"
+compatibility_date = "2026-10-01"
+
+[observability]
+enabled = true
+
+[assets]
+directory = "."
+binding = "ASSETS"
+exclude = [
+  "node_modules/**",
+  "data/**",
+  "assets_backup/**",
+  ".git/**",
+  "server/db.js",
+  "server/server.js",
+  "scripts/**",
+  ".env*",
+  "package*.json",
+  "*.md"
+]
+
+[vars]
+SUPABASE_URL = "https://qfapvhxqbphlumrjiolh.supabase.co"
+SUPABASE_ANON_KEY = "sb_publishable_p3otB-TneU2IugUNvk0k5g_U_E9P0ge"
+CLOUDINARY_CLOUD_NAME = "uaanigxf"
+CLOUDINARY_API_KEY = "947725838848652"
+LIVE_SITE_ORIGIN = "https://muse-fitness-studio.lmt9823.workers.dev"
+TELEGRAM_CHAT_ID = "-5490794373"
