@@ -827,15 +827,173 @@ body {
   font-size: 14px;
 }
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .app-layout { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; }
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .grid-2 { grid-template-columns: 1fr; }
-  .main-content { padding: 20px; }
+.mobile-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  width: 38px;
+  height: 38px;
+  color: var(--text-main);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition);
 }
 
-@media (max-width: 600px) {
-  .kpi-grid { grid-template-columns: 1fr; }
+.mobile-menu-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 1050;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 992px) {
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 82vw;
+    z-index: 1100;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .app-layout.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .app-layout.sidebar-open .sidebar-backdrop {
+    display: block;
+    opacity: 1;
+  }
+
+  .main-content {
+    padding: 16px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .grid-2, .grid-3 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .branches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing-admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .topbar-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .filter-bar .search-box,
+  .filter-bar .select-input {
+    width: 100%;
+  }
+
+  .modal-dialog {
+    width: 95vw !important;
+    max-height: 90vh;
+    overflow-y: auto;
+    margin: 16px auto;
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .coach-admin-card {
+    flex-direction: column;
+  }
+
+  .coach-admin-img {
+    width: 100% !important;
+    height: 200px !important;
+  }
+
+  .branch-admin-card {
+    flex-direction: column;
+  }
+
+  .branch-admin-img {
+    width: 100% !important;
+    height: 180px !important;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .btn-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }

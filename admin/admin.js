@@ -145,11 +145,33 @@
 
   document.getElementById('btnLogout')?.addEventListener('click', logout);
 
-  /* ==================== NAVIGATION / TABS ==================== */
+  /* ==================== NAVIGATION / TABS & MOBILE DRAWER ==================== */
   const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
   const tabPanes = document.querySelectorAll('.tab-pane');
+  const appContainer = document.getElementById('appContainer');
+  const btnMobileSidebarToggle = document.getElementById('btnMobileSidebarToggle');
+  const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+  function openSidebar() {
+    appContainer?.classList.add('sidebar-open');
+  }
+
+  function closeSidebar() {
+    appContainer?.classList.remove('sidebar-open');
+  }
+
+  btnMobileSidebarToggle?.addEventListener('click', () => {
+    if (appContainer?.classList.contains('sidebar-open')) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  });
+
+  sidebarOverlay?.addEventListener('click', closeSidebar);
 
   window.switchTab = function (tabId) {
+    closeSidebar();
     navItems.forEach((btn) => btn.classList.toggle('active', btn.dataset.tab === tabId));
     tabPanes.forEach((pane) => pane.classList.toggle('active', pane.id === `tab-${tabId}`));
 
@@ -1162,35 +1184,32 @@
       const data = res.data || {};
 
       // Hero
-      if (data.home_hero) {
-        const h = data.home_hero;
-        if (document.getElementById('heroEyebrow')) document.getElementById('heroEyebrow').value = h.eyebrow || '';
-        if (document.getElementById('heroHeadline')) document.getElementById('heroHeadline').value = h.headline || '';
-        if (document.getElementById('heroLead')) document.getElementById('heroLead').value = h.lead || '';
-        if (document.getElementById('heroCtaText')) document.getElementById('heroCtaText').value = h.cta_text || '';
-        if (document.getElementById('heroCtaLink')) document.getElementById('heroCtaLink').value = h.cta_link || '';
-        if (document.getElementById('heroImage')) document.getElementById('heroImage').value = h.hero_image || '';
-      }
+      const h = data.home_hero || {};
+      if (document.getElementById('heroEyebrow')) document.getElementById('heroEyebrow').value = h.eyebrow || 'Muse Fitness Studio · TP.HCM';
+      if (document.getElementById('heroHeadline')) document.getElementById('heroHeadline').value = h.headline || 'Nơi nàng bắt đầu chăm sóc mình,\ntheo cách nhẹ nhàng hơn';
+      if (document.getElementById('heroLead')) document.getElementById('heroLead').value = h.lead || 'Muse là phòng tập dành riêng cho nữ tại TP.HCM, nơi nàng có thể chọn cách bắt đầu phù hợp với mình — từ Gói Hội Viên, Hành Trình 9 Tuần đến PT 1-1.';
+      if (document.getElementById('heroCtaText')) document.getElementById('heroCtaText').value = h.cta_text || 'Đăng ký tập thử miễn phí';
+      if (document.getElementById('heroCtaLink')) document.getElementById('heroCtaLink').value = h.cta_link || 'signup.html';
+      if (document.getElementById('heroImage')) document.getElementById('heroImage').value = h.hero_image || 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219632/muse-fitness-studio/photo-hero.webp';
 
       // Philosophy & Socials
-      if (data.home_philosophy && document.getElementById('philQuote')) {
-        document.getElementById('philQuote').value = data.home_philosophy.quote || '';
+      const phil = data.home_philosophy || {};
+      if (document.getElementById('philQuote')) {
+        document.getElementById('philQuote').value = phil.quote || 'Muse không phải là nơi ép nàng phải đẹp hơn, mà là nơi nàng thấy mình xứng đáng được chăm sóc hơn.';
       }
-      if (document.getElementById('socZalo')) document.getElementById('socZalo').value = data.zalo_url || '';
-      if (document.getElementById('socFacebook')) document.getElementById('socFacebook').value = data.facebook_url || '';
-      if (document.getElementById('socInstagram')) document.getElementById('socInstagram').value = data.instagram_url || '';
-      if (document.getElementById('socTiktok')) document.getElementById('socTiktok').value = data.tiktok_url || '';
+      if (document.getElementById('socZalo')) document.getElementById('socZalo').value = data.zalo_url || 'https://zalo.me/musefitness';
+      if (document.getElementById('socFacebook')) document.getElementById('socFacebook').value = data.facebook_url || 'https://www.facebook.com/musefitnessstudio';
+      if (document.getElementById('socInstagram')) document.getElementById('socInstagram').value = data.instagram_url || 'https://www.instagram.com/musefitnessstudio';
+      if (document.getElementById('socTiktok')) document.getElementById('socTiktok').value = data.tiktok_url || 'https://www.tiktok.com/@musefitnessstudio';
 
       // 9-Week Journey
-      if (data.home_journey_9w) {
-        const j = data.home_journey_9w;
-        if (document.getElementById('jStep1Title')) document.getElementById('jStep1Title').value = j.step1_title || '';
-        if (document.getElementById('jStep1Desc')) document.getElementById('jStep1Desc').value = j.step1_desc || '';
-        if (document.getElementById('jStep2Title')) document.getElementById('jStep2Title').value = j.step2_title || '';
-        if (document.getElementById('jStep2Desc')) document.getElementById('jStep2Desc').value = j.step2_desc || '';
-        if (document.getElementById('jStep3Title')) document.getElementById('jStep3Title').value = j.step3_title || '';
-        if (document.getElementById('jStep3Desc')) document.getElementById('jStep3Desc').value = j.step3_desc || '';
-      }
+      const j = data.home_journey_9w || {};
+      if (document.getElementById('jStep1Title')) document.getElementById('jStep1Title').value = j.step1_title || 'Làm quen, xây nền';
+      if (document.getElementById('jStep1Desc')) document.getElementById('jStep1Desc').value = j.step1_desc || 'Chỉnh kỹ thuật, làm quen với cơ thể, xây thói quen lên lịch tập đều.';
+      if (document.getElementById('jStep2Title')) document.getElementById('jStep2Title').value = j.step2_title || 'Tăng nhịp hai bộ môn';
+      if (document.getElementById('jStep2Desc')) document.getElementById('jStep2Desc').value = j.step2_desc || 'Boxing giúp nàng giải phóng năng lượng; Bodyweight – Kettlebell giúp xây sức bền và kiểm soát cơ thể.';
+      if (document.getElementById('jStep3Title')) document.getElementById('jStep3Title').value = j.step3_title || 'Cảm nhận thay đổi';
+      if (document.getElementById('jStep3Desc')) document.getElementById('jStep3Desc').value = j.step3_desc || 'Nàng thấy mình ngủ ngon hơn, đứng thẳng hơn, mặc đồ ưng hơn.';
     } catch (err) {
       showToast('Lỗi nạp cấu hình trang chủ', 'error');
     }
