@@ -1,6 +1,7 @@
 // app.js — Muse Fitness Studio (editorial rebuild)
 (function () {
   const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
   const LIVE_SITE_ORIGIN =
     window.__LIVE_SITE_ORIGIN__ ||
     (window.location.protocol.startsWith("http")

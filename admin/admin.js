@@ -16,6 +16,31 @@
     cancelled: { label: 'Huỷ / Không nghe', class: 'status-cancelled' },
   };
 
+  const IMAGE_CDN_MAP = {
+    'branch-nguyen-thi-thap': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219585/muse-fitness-studio/branch-nguyen-thi-thap.webp',
+    'branch-le-duc-tho': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219584/muse-fitness-studio/branch-le-duc-tho.webp',
+    'branch-hoang-van-thu': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219582/muse-fitness-studio/branch-hoang-van-thu.jpg',
+    'photo-coach': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219629/muse-fitness-studio/photo-coach.webp',
+    'class-boxing-fit': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219589/muse-fitness-studio/class-boxing-fit.webp',
+    'class-kettlebell': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219592/muse-fitness-studio/class-kettlebell.webp',
+    'blog-weight-training': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219581/muse-fitness-studio/blog-weight-training.webp',
+    'blog-kettlebell': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219573/muse-fitness-studio/blog-kettlebell.webp',
+    'blog-need-pt': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219575/muse-fitness-studio/blog-need-pt.webp',
+    'blog-postpartum': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219576/muse-fitness-studio/blog-postpartum.webp',
+    'blog-protein-meal': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219578/muse-fitness-studio/blog-protein-meal.webp',
+    'blog-rest-day': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219580/muse-fitness-studio/blog-rest-day.webp',
+  };
+
+  function resolveImgUrl(url, fallbackKey = 'photo-coach') {
+    if (!url) return IMAGE_CDN_MAP[fallbackKey] || '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const clean = url.split('/').pop().replace(/\.[^/.]+$/, '');
+    for (const [key, cdnUrl] of Object.entries(IMAGE_CDN_MAP)) {
+      if (clean.includes(key)) return cdnUrl;
+    }
+    return url.startsWith('/') ? url : `/${url}`;
+  }
+
   /* ==================== HTTP CLIENT ==================== */
   async function apiFetch(endpoint, options = {}) {
     const headers = {
@@ -549,7 +574,7 @@
       const grid = document.getElementById('coachesGrid');
       grid.innerHTML = res.data.map((c) => `
         <div class="coach-admin-card">
-          <img src="../${escapeHtml(c.photo_url || 'assets/photo-coach.jpg')}" alt="${escapeHtml(c.name)}" class="coach-admin-img">
+          <img src="${escapeHtml(resolveImgUrl(c.photo_url, 'photo-coach'))}" alt="${escapeHtml(c.name)}" class="coach-admin-img">
           <div class="coach-admin-body">
             <span class="badge-tag" style="align-self:flex-start">${escapeHtml(c.tag || 'Coach')}</span>
             <h3 style="font-size:16px">${escapeHtml(c.name)}</h3>
@@ -652,7 +677,7 @@
       const grid = document.getElementById('branchesGrid');
       grid.innerHTML = res.data.map((b) => `
         <div class="branch-admin-card">
-          <img src="../${escapeHtml(b.image_url || 'assets/branch-hoang-van-thu.png')}" alt="${escapeHtml(b.name)}" class="branch-admin-img">
+          <img src="${escapeHtml(resolveImgUrl(b.image_url, 'branch-hoang-van-thu'))}" alt="${escapeHtml(b.name)}" class="branch-admin-img">
           <div class="branch-admin-body">
             <h3>Chi nhánh ${escapeHtml(b.name)}</h3>
             <p class="muted" style="font-size:13px">📍 ${escapeHtml(b.address)}</p>
@@ -702,7 +727,7 @@
       tbody.innerHTML = res.data.map((b) => `
         <tr>
           <td>
-            <img src="../${escapeHtml(b.cover_image || 'assets/blog-weight-training.jpg')}" style="width:60px;height:40px;object-fit:cover;border-radius:6px">
+            <img src="${escapeHtml(resolveImgUrl(b.cover_image, 'blog-weight-training'))}" style="width:60px;height:40px;object-fit:cover;border-radius:6px">
           </td>
           <td><strong>${escapeHtml(b.title)}</strong></td>
           <td><span class="badge-tag">${escapeHtml(b.category)}</span></td>
