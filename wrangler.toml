@@ -23,7 +23,7 @@ exclude = [
 
 [vars]
 SUPABASE_URL = "https://qfapvhxqbphlumrjiolh.supabase.co"
-SUPABASE_ANON_KEY = "sb_publishable_p3otB-TneU2IugUNvk0k5g_U_E9P0ge"
+SUPABASE_ANON_KEY = "sb_publishable_p3otB-TneU2IugUNvk0k5g_U_E9POge"
 CLOUDINARY_CLOUD_NAME = "uaanigxf"
 CLOUDINARY_API_KEY = "947725838848652"
 LIVE_SITE_ORIGIN = "https://muse-fitness-studio.lmt9823.workers.dev"
