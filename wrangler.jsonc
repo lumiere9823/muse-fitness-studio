@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "muse-fitness-studio",
+  "compatibility_date": "2026-10-01",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": ".",
+    "exclude": [
+      "node_modules/**",
+      "data/**",
+      "assets_backup/**",
+      ".git/**",
+      "server/**",
+      "scripts/**",
+      ".env*",
+      "package*.json",
+      "*.md"
+    ]
+  }
+}
