@@ -21,6 +21,12 @@ function getSupabase(env) {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
+async function sha1(str) {
+  const buffer = new TextEncoder().encode(str);
+  const hash = await crypto.subtle.digest('SHA-1', buffer);
+  return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 // Telegram alert helper
 async function sendTelegramAlert(env, lead) {
   const token = env.TELEGRAM_BOT_TOKEN;
@@ -80,7 +86,7 @@ export async function onRequest(context) {
   if (pathname === 'health') {
     return jsonResponse({
       ok: true,
-      service: 'Muse Fitness Studio on Cloudflare Pages Functions',
+      service: 'Muse Fitness Studio on Cloudflare Edge',
       time: new Date().toISOString(),
       supabaseConfigured: Boolean(supabase),
       cloudinaryConfigured: Boolean(env.CLOUDINARY_CLOUD_NAME),
@@ -113,10 +119,82 @@ export async function onRequest(context) {
     });
   }
 
-  // 3. Lead Submission (POST /api/lead or /api/leads/public)
+  // 3. Cloudinary Signature for Direct Browser Upload
+  if (pathname === 'cloudinary/sign' && method === 'POST') {
+    const apiSecret = env.CLOUDINARY_API_SECRET;
+    const apiKey = env.CLOUDINARY_API_KEY;
+    const cloudName = env.CLOUDINARY_CLOUD_NAME;
+    if (!apiSecret || !apiKey || !cloudName) {
+      return jsonResponse({ ok: false, error: 'Chưa cấu hình Cloudinary Secret trên Cloudflare' }, 500);
+    }
+
+    const timestamp = Math.round(Date.now() / 1000);
+    const folder = 'muse-fitness-studio';
+    // Cloudinary signature format: sorted params joined by & then appended with secret
+    const toSign = `folder=${folder}&timestamp=${timestamp}${apiSecret}`;
+    const signature = await sha1(toSign);
+
+    return jsonResponse({
+      ok: true,
+      signature,
+      timestamp,
+      folder,
+      apiKey,
+      cloudName,
+    });
+  }
+
+  // 4. Public Combined Content Endpoint (powers dynamic landing pages)
+  if (pathname === 'content/public' && method === 'GET') {
+    if (!supabase) {
+      return jsonResponse({ ok: true, data: {}, fallback: true });
+    }
+
+    try {
+      const [settingsRes, branchesRes, coachesRes, pricingRes, schedulesRes, blogsRes] = await Promise.all([
+        supabase.from('settings').select('*'),
+        supabase.from('branches').select('*').eq('is_active', 1).order('order_index', { ascending: true }),
+        supabase.from('coaches').select('*').eq('is_active', 1).order('order_index', { ascending: true }),
+        supabase.from('pricing_plans').select('*').eq('is_active', 1).order('order_index', { ascending: true }),
+        supabase.from('schedules').select('*').eq('is_active', 1).order('order_index', { ascending: true }),
+        supabase.from('blogs').select('*').eq('is_published', 1).order('created_at', { ascending: false }).limit(6),
+      ]);
+
+      const settingsMap = {};
+      (settingsRes.data || []).forEach((row) => {
+        try {
+          settingsMap[row.key] = JSON.parse(row.value);
+        } catch (_) {
+          settingsMap[row.key] = row.value;
+        }
+      });
+
+      return jsonResponse({
+        ok: true,
+        data: {
+          settings: settingsMap,
+          branches: branchesRes.data || [],
+          coaches: coachesRes.data || [],
+          pricing: pricingRes.data || [],
+          schedules: schedulesRes.data || [],
+          blogs: blogsRes.data || [],
+        },
+      });
+    } catch (err) {
+      return jsonResponse({ ok: false, error: err.message }, 500);
+    }
+  }
+
+  // 5. Lead Submission (POST /api/lead or /api/leads/public)
   if ((pathname === 'lead' || pathname === 'leads/public') && method === 'POST') {
     try {
       const body = await request.json();
+
+      // Anti-Spam Bot Protection: Honeypot trap check
+      if (body.website || body.hp_website || body.honeypot || body.website_trap) {
+        return jsonResponse({ ok: true, message: 'Đã nhận thông tin' });
+      }
+
       if (!body.name || !body.phone) {
         return jsonResponse({ ok: false, error: 'Họ tên và số điện thoại là bắt buộc' }, 400);
       }
@@ -140,33 +218,37 @@ export async function onRequest(context) {
           fbclid: body.fbclid || '',
           ttclid: body.ttclid || '',
           gclid: body.gclid || '',
-          page_url: body.page_url || '',
-          referrer: body.referrer || '',
+          fbp: body.fbp || '',
+          fbc: body.fbc || '',
+          ttp: body.ttp || '',
+          user_agent: request.headers.get('user-agent') || '',
+          ip_address: request.headers.get('cf-connecting-ip') || '',
         }).select();
 
-        if (error) console.error('Supabase lead error:', error);
+        if (error) {
+          console.error('Supabase lead insert error:', error);
+        }
       }
 
-      // Send telegram alert in background
-      sendTelegramAlert(env, body);
+      // Trigger Telegram Alert
+      await sendTelegramAlert(env, body);
 
       return jsonResponse({
         ok: true,
-        message: 'Muse đã nhận thông tin của nàng thành công.',
+        message: 'Đăng ký thành công! Muse sẽ liên hệ sớm nhất.',
       });
     } catch (err) {
       return jsonResponse({ ok: false, error: err.message }, 500);
     }
   }
 
-  // 4. Leads CRM (GET /api/leads, PATCH /api/leads/:id, POST /api/leads, DELETE /api/leads/:id)
+  // 6. Leads Management (GET, PATCH, DELETE, Export)
   if (pathname.startsWith('leads')) {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
-    // Export CSV
-    if (pathname === 'leads/export/csv') {
-      const { data } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
-      const rows = (data || []).map((l) => [
+    if (method === 'GET' && pathname === 'leads/export/csv') {
+      const { data: leads } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
+      const rows = (leads || []).map((l) => [
         l.id,
         `"${(l.name || '').replace(/"/g, '""')}"`,
         `"${(l.phone || '').replace(/"/g, '""')}"`,
@@ -225,7 +307,7 @@ export async function onRequest(context) {
     }
   }
 
-  // 5. Dashboard Stats (GET /api/stats/dashboard)
+  // 7. Dashboard Stats (GET /api/stats/dashboard)
   if (pathname === 'stats/dashboard') {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
@@ -249,40 +331,39 @@ export async function onRequest(context) {
       if (statusBreakdown[l.status] !== undefined) statusBreakdown[l.status]++;
       const b = l.branch || 'Chưa chọn';
       branchCounts[b] = (branchCounts[b] || 0) + 1;
-      const s = l.utm_source || 'Direct / Tự nhiên';
+      const s = l.source || 'website';
       sourceCounts[s] = (sourceCounts[s] || 0) + 1;
     });
 
-    const branchBreakdown = Object.entries(branchCounts).map(([branch, count]) => ({ branch, count }));
-    const sourceBreakdown = Object.entries(sourceCounts).map(([source, count]) => ({ source, count }));
-
     return jsonResponse({
       ok: true,
-      stats: {
+      data: {
         totalLeads,
         leadsToday,
-        leadsWeek: totalLeads,
-        convertedLeads,
         attendedLeads,
+        convertedLeads,
         conversionRate,
         statusBreakdown,
-        branchBreakdown,
-        sourceBreakdown,
-        recentLeads: all.slice(0, 5),
+        branchCounts,
+        sourceCounts,
       },
     });
   }
 
-  // 6. Schedules (GET /api/schedules, POST, PUT, DELETE)
+  // 8. Schedules (GET, POST, PUT, DELETE)
   if (pathname.startsWith('schedules')) {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
     if (method === 'GET') {
-      let query = supabase.from('schedules').select('*').order('order_index', { ascending: true });
       const branch = url.searchParams.get('branch');
       const discipline = url.searchParams.get('discipline');
+      const includeInactive = url.searchParams.get('includeInactive');
+
+      let query = supabase.from('schedules').select('*').order('order_index', { ascending: true });
       if (branch && branch !== 'all') query = query.eq('branch', branch);
       if (discipline && discipline !== 'all') query = query.eq('discipline', discipline);
+      if (!includeInactive) query = query.eq('is_active', 1);
+
       const { data, error } = await query;
       if (error) return jsonResponse({ ok: false, error: error.message }, 500);
       return jsonResponse({ ok: true, data: data || [] });
@@ -311,7 +392,7 @@ export async function onRequest(context) {
     }
   }
 
-  // 7. Coaches (GET /api/coaches, POST, PUT, DELETE)
+  // 9. Coaches (GET, POST, PUT, DELETE)
   if (pathname.startsWith('coaches')) {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
@@ -344,7 +425,7 @@ export async function onRequest(context) {
     }
   }
 
-  // 8. Branches (GET /api/branches, POST, PUT, DELETE)
+  // 10. Branches (GET, POST, PUT, DELETE)
   if (pathname.startsWith('branches')) {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
@@ -377,7 +458,7 @@ export async function onRequest(context) {
     }
   }
 
-  // 9. Pricing (GET /api/pricing, POST, PUT, DELETE)
+  // 11. Pricing Plans (GET, POST, PUT, DELETE)
   if (pathname.startsWith('pricing')) {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
@@ -386,9 +467,31 @@ export async function onRequest(context) {
       if (error) return jsonResponse({ ok: false, error: error.message }, 500);
       return jsonResponse({ ok: true, data: data || [] });
     }
+
+    if (method === 'POST') {
+      const body = await request.json();
+      const { data, error } = await supabase.from('pricing_plans').insert(body).select();
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, data });
+    }
+
+    if (method === 'PUT') {
+      const id = pathParts[1];
+      const body = await request.json();
+      const { data, error } = await supabase.from('pricing_plans').update(body).eq('id', id).select();
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, data });
+    }
+
+    if (method === 'DELETE') {
+      const id = pathParts[1];
+      const { error } = await supabase.from('pricing_plans').delete().eq('id', id);
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, message: 'Đã xóa gói tập' });
+    }
   }
 
-  // 10. Blogs (GET /api/blogs)
+  // 12. Blogs (GET, POST, PUT, DELETE)
   if (pathname.startsWith('blogs')) {
     if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
 
@@ -397,28 +500,80 @@ export async function onRequest(context) {
       if (error) return jsonResponse({ ok: false, error: error.message }, 500);
       return jsonResponse({ ok: true, data: data || [] });
     }
+
+    if (method === 'POST') {
+      const body = await request.json();
+      const { data, error } = await supabase.from('blogs').insert(body).select();
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, data });
+    }
+
+    if (method === 'PUT') {
+      const id = pathParts[1];
+      const body = await request.json();
+      const { data, error } = await supabase.from('blogs').update(body).eq('id', id).select();
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, data });
+    }
+
+    if (method === 'DELETE') {
+      const id = pathParts[1];
+      const { error } = await supabase.from('blogs').delete().eq('id', id);
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, message: 'Đã xóa bài viết' });
+    }
   }
 
-  // 11. Settings & Status
+  // 13. Settings (GET, POST)
   if (pathname === 'settings') {
-    return jsonResponse({
-      ok: true,
-      data: {
+    if (!supabase) return jsonResponse({ ok: false, error: 'Chưa cấu hình Supabase' }, 500);
+
+    if (method === 'GET') {
+      const { data: rows, error } = await supabase.from('settings').select('*');
+      const settingsMap = {
         studio_name: 'Muse Fitness Studio',
         hotline: '1900 299 991',
         email: 'contact@musefitnessstudio.com',
         working_hours: '6:00 – 21:00 (Thứ 2 – Chủ Nhật)',
-        telegram_bot_token_masked: env.TELEGRAM_BOT_TOKEN ? '****' : '',
-        enable_telegram_notifications: env.TELEGRAM_BOT_TOKEN ? '1' : '0',
-      },
-      cloudStatus: {
-        cloudinary: { configured: Boolean(env.CLOUDINARY_CLOUD_NAME), cloudName: env.CLOUDINARY_CLOUD_NAME || '' },
-        supabase: { configured: Boolean(supabase), url: env.SUPABASE_URL || '' },
-      },
-    });
+        zalo_url: 'https://zalo.me/musefitnessstudio',
+        facebook_url: 'https://facebook.com/musefitnessstudio',
+        instagram_url: 'https://instagram.com/musefitnessstudio',
+        tiktok_url: 'https://tiktok.com/@musefitnessstudio',
+      };
+
+      (rows || []).forEach((r) => {
+        try {
+          settingsMap[r.key] = JSON.parse(r.value);
+        } catch (_) {
+          settingsMap[r.key] = r.value;
+        }
+      });
+
+      return jsonResponse({
+        ok: true,
+        data: settingsMap,
+        cloudStatus: {
+          cloudinary: { configured: Boolean(env.CLOUDINARY_CLOUD_NAME), cloudName: env.CLOUDINARY_CLOUD_NAME || '' },
+          supabase: { configured: Boolean(supabase), url: env.SUPABASE_URL || '' },
+          telegram: { configured: Boolean(env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) },
+        },
+      });
+    }
+
+    if (method === 'POST') {
+      const body = await request.json();
+      const upsertRows = Object.entries(body).map(([key, val]) => ({
+        key,
+        value: typeof val === 'object' ? JSON.stringify(val) : String(val),
+      }));
+
+      const { error } = await supabase.from('settings').upsert(upsertRows, { onConflict: 'key' });
+      if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+      return jsonResponse({ ok: true, message: 'Đã cập nhật cài đặt thành công' });
+    }
   }
 
-  // Test Telegram endpoint
+  // 14. Test Telegram endpoint
   if (pathname === 'settings/test-telegram' && method === 'POST') {
     const token = env.TELEGRAM_BOT_TOKEN;
     const chatId = env.TELEGRAM_CHAT_ID;
@@ -431,7 +586,7 @@ export async function onRequest(context) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
-        text: `🤖 <b>MUSE FITNESS STUDIO — CLOUDFLARE PAGES EDGE BOT</b>\n\n✅ Kết nối thành công trên Cloudflare!\n⏱️ ${time}`,
+        text: `🤖 <b>MUSE FITNESS STUDIO — CLOUDFLARE EDGE BOT</b>\n\n✅ Kết nối thành công trên Cloudflare!\n⏱️ ${time}`,
         parse_mode: 'HTML',
       }),
     });

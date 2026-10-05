@@ -25,6 +25,7 @@ const IMAGE_CDN_FALLBACK = {
   'blog-postpartum': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219576/muse-fitness-studio/blog-postpartum.webp',
   'blog-protein-meal': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219578/muse-fitness-studio/blog-protein-meal.webp',
   'blog-rest-day': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219580/muse-fitness-studio/blog-rest-day.webp',
+  'og-image': 'https://res.cloudinary.com/uaanigxf/image/upload/v1791219632/muse-fitness-studio/photo-hero.webp',
 };
 
 function getCdnRedirect(pathname) {
@@ -35,6 +36,27 @@ function getCdnRedirect(pathname) {
   return null;
 }
 
+function addSecurityAndCacheHeaders(response, pathname) {
+  const newHeaders = new Headers(response.headers);
+  newHeaders.set('X-Content-Type-Options', 'nosniff');
+  newHeaders.set('X-Frame-Options', 'SAMEORIGIN');
+  newHeaders.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  if (pathname.match(/\.(webp|jpg|jpeg|png|svg|ico|woff2?|ttf)$/i)) {
+    newHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
+  } else if (pathname.match(/\.(css|js)$/i)) {
+    newHeaders.set('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+  } else if (pathname.endsWith('.html') || pathname === '/' || !pathname.includes('.')) {
+    newHeaders.set('Cache-Control', 'public, max-age=0, must-revalidate');
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -43,7 +65,10 @@ export default {
     if (url.pathname === '/env-config.js') {
       const origin = env.LIVE_SITE_ORIGIN || url.origin;
       return new Response(`window.__LIVE_SITE_ORIGIN__ = ${JSON.stringify(origin)};`, {
-        headers: { 'Content-Type': 'application/javascript' },
+        headers: {
+          'Content-Type': 'application/javascript',
+          'Cache-Control': 'public, max-age=3600',
+        },
       });
     }
 
@@ -57,7 +82,8 @@ export default {
     if (url.pathname === '/admin' || url.pathname === '/admin/') {
       const adminReq = new Request(new URL('/admin/index.html', request.url), request);
       if (env.ASSETS) {
-        return env.ASSETS.fetch(adminReq);
+        const res = await env.ASSETS.fetch(adminReq);
+        return addSecurityAndCacheHeaders(res, '/admin/index.html');
       }
     }
 
@@ -65,12 +91,24 @@ export default {
     if (env.ASSETS) {
       const res = await env.ASSETS.fetch(request);
       if (res.status === 404) {
+        // A. Image CDN fallback redirect
         const cdnUrl = getCdnRedirect(url.pathname);
         if (cdnUrl) {
           return Response.redirect(cdnUrl, 302);
         }
+        // B. Custom 404 page for missing pages
+        try {
+          const notFoundReq = new Request(new URL('/404.html', request.url), request);
+          const notFoundRes = await env.ASSETS.fetch(notFoundReq);
+          if (notFoundRes && notFoundRes.status === 200) {
+            return new Response(notFoundRes.body, {
+              status: 404,
+              headers: notFoundRes.headers,
+            });
+          }
+        } catch (_) {}
       }
-      return res;
+      return addSecurityAndCacheHeaders(res, url.pathname);
     }
 
     return new Response('Not found', { status: 404 });
