@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5PG5S6F8');</script>
+  <!-- End Google Tag Manager -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lịch tập | Muse Fitness Studio</title>
+  <meta name="description" content="Lịch lớp Hành Trình 9 Tuần tại Muse Fitness Studio. 5 khung giờ, 2 bộ môn (Boxing, Bodyweight–Kettlebell), mỗi bộ môn có 2 level (lv1, lv2). Chọn lớp và đăng ký tập thử.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Montserrat:wght@400;500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/uaanigxf/image/upload/v1791219593/muse-fitness-studio/favicon.webp">
+  <link rel="apple-touch-icon" href="https://res.cloudinary.com/uaanigxf/image/upload/v1791219593/muse-fitness-studio/favicon.webp">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Muse Fitness Studio">
+  <meta property="og:title" content="Lịch tập | Muse Fitness Studio">
+  <meta property="og:description" content="Lịch lớp Hành Trình 9 Tuần tại Muse. 5 khung giờ, 2 bộ môn, mỗi có 2 level. Đăng ký tập thử hôm nay.">
+  <meta property="og:image" content="assets/og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Lịch tập | Muse Fitness Studio">
+  <meta name="twitter:description" content="Lịch lớp Hành Trình 9 Tuần tại Muse. 5 khung giờ, 2 bộ môn, mỗi có 2 level.">
+  <meta name="twitter:image" content="assets/og-image.jpg">
+  <script>
+  window.MUSE_TWEAKS = /*EDITMODE-BEGIN*/{"cta":"rose","font":"spectral"}/*EDITMODE-END*/;
+  (function(){try{var s=Object.assign({},window.MUSE_TWEAKS,JSON.parse(localStorage.getItem('muse_tweaks')||'{}'));var r=document.documentElement;r.setAttribute('data-cta',s.cta||'rose');r.setAttribute('data-font',s.font||'spectral');}catch(e){}})();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <style id="__schedule-styles">
+    .schedule-filters { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 36px; }
+    .schedule-filters label { display: flex; flex-direction: column; gap: 8px; font-size: 13px; font-weight: 600; text-transform: uppercase; color: var(--brown); }
+    .schedule-filters select { min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); color: var(--espresso); font: inherit; }
+    
+    .slot-group { margin-bottom: 52px; }
+    .slot-head { margin-bottom: 28px; }
+    .slot-head h2 { display: flex; align-items: center; gap: 12px; font-size: 22px; margin-bottom: 8px; }
+    .slot-icon { font-size: 24px; }
+    .slot-desc { color: var(--gray); font-size: 14px; margin-top: 6px; }
+    
+    .class-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .class-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
+    .class-card.locked { opacity: 1; }
+    
+    .class-time { color: var(--brown); font-family: var(--display); font-size: 22px; font-weight: 300; line-height: 1; margin-bottom: 12px; }
+    .class-time small { display: block; color: var(--gray); font-family: var(--body); font-size: 13px; margin-top: 2px; font-weight: 400; }
+    
+    .class-title { font-family: var(--display); font-size: 20px; font-weight: 300; color: var(--espresso); margin-bottom: 10px; }
+    .class-level { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(196,137,138,0.16); color: var(--brown-dark); border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 12px; }
+    .class-level.lv2::before { content: ""; }
+    
+    .class-desc { color: var(--gray); font-size: 13px; line-height: 1.5; margin-bottom: 14px; }
+    .class-cta { text-align: right; }
+    .class-cta .btn { padding: 8px 16px; font-size: 13px; }
+    
+    @media (max-width: 680px) {
+      .schedule-filters { grid-template-columns: 1fr; }
+      .class-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-page="schedule">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5PG5S6F8"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  <header class="site-header">
+    <div class="nav">
+      <a href="index.html" aria-label="Muse home"><img class="logo" src="https://res.cloudinary.com/uaanigxf/image/upload/v1791219616/muse-fitness-studio/muse-logo-dark.webp" alt="Muse"></a>
+      <nav class="nav-links" aria-label="Điều hướng chính">
+        <a href="index.html">Về Muse</a>
+        <a href="course-9-week.html">Hành Trình 9 Tuần</a>
+        <a aria-current="page" href="schedule.html">Lịch tập</a>
+        <a href="pricing.html">Bảng giá</a>
+        <a href="stories.html">Câu chuyện</a>
+        <a href="blog.html">Blog</a>
+        <a href="branches.html">Chi nhánh</a>
+        <div class="drawer-actions">
+          <a class="btn btn-secondary" href="schedule.html#lich">Xem lịch lớp</a>
+          <a class="btn btn-primary" href="signup.html">Đăng ký tập thử</a>
+        </div>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="schedule.html#lich">Xem lịch lớp</a>
+        <a class="btn btn-primary" href="signup.html">Đăng ký tập thử</a>
+      </div>
+      <button class="menu-toggle" type="button" aria-label="Mở menu" aria-expanded="false">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="section band-putty">
+      <div class="container split">
+        <div>
+          <p class="eyebrow">Hành Trình 9 Tuần</p>
+          <h1>Chọn khung giờ và bộ môn <span class="italic">phù hợp với nàng.</span></h1>
+          <p class="lead" style="margin-top:24px">Muse có <strong>5 khung giờ</strong> từ sáng đến tối, giúp nàng dễ sắp xếp lịch tập theo nhịp sống của mình. Mỗi khung giờ đều có <strong>Boxing</strong> và <strong>Bodyweight–Kettlebell</strong>, được chia theo cấp độ để nàng bắt đầu vừa sức, tập đúng kỹ thuật và tiến bộ từng bước.</p>
+          <div class="hero-actions"><a class="btn btn-primary" href="signup.html">Đăng ký tập thử</a><a class="btn btn-secondary" href="schedule.html#lich">Xem các khung giờ</a></div>
+        </div>
+        <img src="https://res.cloudinary.com/uaanigxf/image/upload/v1791219594/muse-fitness-studio/hero-schedule-home.webp" alt="Lớp Bodyweight–Kettlebell tại Muse" style="border-radius: var(--radius);">
+      </div>
+    </section>
+
+    <!-- SCHEDULE -->
+    <section class="section" id="lich">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Lịch lớp cố định</p>
+            <h2>Lịch lớp Hành Trình 9 Tuần.</h2>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="schedule-filters">
+          <label>LỰA CHỌN BỘ MÔN
+            <select id="filterDiscipline">
+              <option value="">Tất cả bộ môn</option>
+              <option value="Boxing">Boxing</option>
+              <option value="Bodyweight–Kettlebell">Bodyweight–Kettlebell</option>
+            </select>
+          </label>
+          <label>LỰA CHỌN LEVEL
+            <select id="filterLevel">
+              <option value="">Tất cả level</option>
+              <option value="lv1">Level 1 (người mới)</option>
+              <option value="lv2">Level 2 (đã hoàn thành lv1)</option>
+            </select>
+          </label>
+        </div>
+
+        <!-- ===== SÁNG 6:30–7:30 ===== -->
+        <div class="slot-group">
+          <div class="slot-head">
+            <h2><span class="slot-icon">☀</span> Sáng <span style="color: var(--brown); font-weight: 400;">06:30 – 07:30</span></h2>
+            <p class="slot-desc">Khởi động ngày mới, giúp nàng có thêm năng lượng trước khi bắt đầu công việc.</p>
+          </div>
+          <div class="class-grid">
+            <!-- Boxing lv1 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv1">
+              <div class="class-time">06:30<small>– 07:30</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — đánh lại từ đầu, từng động tác đúng kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Boxing lv2 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv2">
+              <div class="class-time">06:30<small>– 07:30</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Boxing trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv1 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv1">
+              <div class="class-time">06:30<small>– 07:30</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — tập từng động tác với kettlebell, quen di chuyển, nắm vững kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv2 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv2">
+              <div class="class-time">06:30<small>– 07:30</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Bodyweight–Kettlebell trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ===== SÁNG 10:00–11:00 ===== -->
+        <div class="slot-group">
+          <div class="slot-head">
+            <h2><span class="slot-icon">☀</span> Sáng <span style="color: var(--brown); font-weight: 400;">10:00 – 11:00</span></h2>
+            <p class="slot-desc">Phù hợp với nàng có buổi sáng linh hoạt, muốn tập thong thả và không quá vội.</p>
+          </div>
+          <div class="class-grid">
+            <!-- Boxing lv1 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv1">
+              <div class="class-time">10:00<small>– 11:00</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — đánh lại từ đầu, từng động tác đúng kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Boxing lv2 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv2">
+              <div class="class-time">10:00<small>– 11:00</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv1 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv1">
+              <div class="class-time">10:00<small>– 11:00</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — tập từng động tác với kettlebell, quen di chuyển, nắm vững kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv2 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv2">
+              <div class="class-time">10:00<small>– 11:00</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ===== TRƯA 12:00–13:00 ===== -->
+        <div class="slot-group">
+          <div class="slot-head">
+            <h2><span class="slot-icon">◐</span> Trưa <span style="color: var(--brown); font-weight: 400;">12:00 – 13:00</span></h2>
+            <p class="slot-desc">Tận dụng giờ nghỉ trưa để vận động, nạp lại năng lượng và quay lại công việc tỉnh táo hơn.</p>
+          </div>
+          <div class="class-grid">
+            <!-- Boxing lv1 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv1">
+              <div class="class-time">12:00<small>– 13:00</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — đánh lại từ đầu, từng động tác đúng kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Boxing lv2 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv2">
+              <div class="class-time">12:00<small>– 13:00</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Boxing trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv1 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv1">
+              <div class="class-time">12:00<small>– 13:00</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — tập từng động tác với kettlebell, quen di chuyển, nắm vững kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv2 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv2">
+              <div class="class-time">12:00<small>– 13:00</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Bodyweight–Kettlebell trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ===== CHIỀU 15:00–16:00 ===== -->
+        <div class="slot-group">
+          <div class="slot-head">
+            <h2><span class="slot-icon">◑</span> Chiều <span style="color: var(--brown); font-weight: 400;">15:00 – 16:00</span></h2>
+            <p class="slot-desc">Khung giờ nhẹ nhàng trước giờ cao điểm, phù hợp để nàng tập xong rồi tiếp tục lịch trình riêng.</p>
+          </div>
+          <div class="class-grid">
+            <!-- Boxing lv1 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv1">
+              <div class="class-time">15:00<small>– 16:00</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — đánh lại từ đầu, từng động tác đúng kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Boxing lv2 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv2">
+              <div class="class-time">15:00<small>– 16:00</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Boxing trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv1 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv1">
+              <div class="class-time">15:00<small>– 16:00</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — tập từng động tác với kettlebell, quen di chuyển, nắm vững kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv2 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv2">
+              <div class="class-time">15:00<small>– 16:00</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Bodyweight–Kettlebell trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ===== TỐI 18:30–19:30 ===== -->
+        <div class="slot-group">
+          <div class="slot-head">
+            <h2><span class="slot-icon">☾</span> Tối <span style="color: var(--brown); font-weight: 400;">18:30 – 19:30</span></h2>
+            <p class="slot-desc">Khung giờ sau giờ làm, phù hợp để giải phóng năng lượng và dành lại một khoảng thời gian cho mình.</p>
+          </div>
+          <div class="class-grid">
+            <!-- Boxing lv1 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv1">
+              <div class="class-time">18:30<small>– 19:30</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — đánh lại từ đầu, từng động tác đúng kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Boxing lv2 -->
+            <article class="class-card" data-discipline="Boxing" data-level="lv2">
+              <div class="class-time">18:30<small>– 19:30</small></div>
+              <h3 class="class-title">Boxing</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Boxing trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv1 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv1">
+              <div class="class-time">18:30<small>– 19:30</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level">Level 1 — Làm quen từ đầu</div>
+              <p class="class-desc">Nền tảng cơ bản — tập từng động tác với kettlebell, quen di chuyển, nắm vững kỹ thuật.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+
+            <!-- Bodyweight–Kettlebell lv2 -->
+            <article class="class-card" data-discipline="Bodyweight–Kettlebell" data-level="lv2">
+              <div class="class-time">18:30<small>– 19:30</small></div>
+              <h3 class="class-title">Bodyweight–Kettlebell</h3>
+              <div class="class-level lv2">Level 2 — Nâng cao kỹ thuật</div>
+              <p class="class-desc">Yêu cầu: hoàn thành Level 1 Bodyweight–Kettlebell trước. Bộ động tác phức tạp hơn, tăng cường sức mạnh.</p>
+              <div class="class-cta"><a class="btn btn-secondary" href="signup.html">Đăng ký</a></div>
+            </article>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CTA Band -->
+    <section class="section band-dark">
+      <div class="container">
+        <div class="cta-band" style="background: var(--espresso); color: var(--cream);">
+          <div>
+            <h2>Sẵn sàng bắt đầu hành trình của nàng?</h2>
+            <p class="muted" style="margin-top: 10px;">Đăng ký tập thử 2 buổi miễn phí để cảm nhận không gian, HLV và nhịp tập.</p>
+          </div>
+          <a class="btn btn-primary" href="signup.html">Đăng ký ngay</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <img class="logo" src="https://res.cloudinary.com/uaanigxf/image/upload/v1791219615/muse-fitness-studio/muse-logo-cream.webp" alt="Muse" style="width: 104px; margin-bottom: 14px;">
+          <p style="margin-top:20px; font-size: 14px; color: rgba(247,243,238,0.76); max-width: 280px;">Muse Fitness Studio.<br>Nơi nàng bắt đầu chăm sóc mình, theo cách nhẹ nhàng hơn.</p>
+        </div>
+        <div>
+          <h3>Về Muse</h3>
+          <ul>
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="pricing.html">Bảng giá</a></li>
+            <li><a href="branches.html">Chi nhánh</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Dịch vụ</h3>
+          <ul>
+            <li><a href="course-9-week.html">Hành Trình 9 Tuần</a></li>
+            <li><a href="schedule.html">Lịch lớp</a></li>
+            <li><a href="stories.html">Câu chuyện</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Học tập</h3>
+          <ul>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="signup.html">Đăng ký tư vấn</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Muse Fitness Studio. Tất cả quyền lợi được bảo vệ.</p>
+        <p>Thiết kế và xây dựng bởi <a href="schedule.html#" style="color: inherit;">Muse Team</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <aside class="quick-dock" aria-label="Hành động nhanh">
+    <a class="qd-item qd-fanpage" href="https://m.me/1020089937858033" target="_blank" rel="noopener">
+      <span class="qd-label">Nhắn Fanpage</span>
+      <span class="qd-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c-5 0-9 3.6-9 8 0 2.4 1.2 4.6 3.2 6.1L6 21l3.6-1.6c.8.2 1.6.3 2.4.3 5 0 9-3.6 9-8s-4-8-9-8z"/><path d="m7.5 12 3 2 3-3 3.5 3"/></svg></span>
+    </a>
+    <a class="qd-item qd-form" href="signup.html">
+      <span class="qd-label">Form tư vấn</span>
+      <span class="qd-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="m9 12 2 2 4-4"/><path d="M9 17h6"/></svg></span>
+    </a>
+  </aside>
+
+  <script src="tweaks.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const disciplineFilter = document.getElementById('filterDiscipline');
+      const levelFilter = document.getElementById('filterLevel');
+      const cards = document.querySelectorAll('.class-card');
+
+      function filterCards() {
+        const discipline = disciplineFilter.value;
+        const level = levelFilter.value;
+
+        cards.forEach(card => {
+          const cardDiscipline = card.getAttribute('data-discipline');
+          const cardLevel = card.getAttribute('data-level');
+
+          const disciplineMatch = !discipline || cardDiscipline === discipline;
+          const levelMatch = !level || cardLevel === level;
+
+          if (disciplineMatch && levelMatch) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      }
+
+      disciplineFilter.addEventListener('change', filterCards);
+      levelFilter.addEventListener('change', filterCards);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+# Cloudflare Pages Redirects
+# Cấu hình proxy tự động từ Cloudflare sang backend (tránh hoàn toàn lỗi CORS)
+# Sau khi bạn có URL Backend (từ Vercel hoặc Render), hãy thay link bên dưới:
+# /api/*  https://ten-backend-cua-ban.vercel.app/api/:splat  200

@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Muse Fitness Studio</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <!-- AUTH / LOGIN OVERLAY -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <div class="login-brand">
+        <img src="../assets/muse-logo-dark.png" alt="Muse Fitness Studio" class="login-logo">
+        <h2>Trang Quản Trị Hệ Thống</h2>
+        <p>Đăng nhập để quản lý Leads, Lịch tập & Nội dung Studio</p>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="loginUsername">Tài khoản</label>
+          <input type="text" id="loginUsername" required placeholder="admin" value="admin">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••" value="muse123456">
+        </div>
+        <div id="loginError" class="alert-error" style="display: none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+      </form>
+      <div class="login-hint">
+        <span>Tài khoản mẫu: <code>admin</code> / <code>muse123456</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP WRAPPER -->
+  <div id="appContainer" class="app-layout" style="display: none;">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a href="../index.html" target="_blank" title="Xem website Muse">
+          <img src="../assets/muse-logo-cream.png" alt="Muse Studio" class="sidebar-logo">
+        </a>
+        <span class="badge badge-admin">CMS / CRM</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+          <span>Tổng quan</span>
+        </button>
+        <button class="nav-item" data-tab="leads">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Khách hàng & Leads</span>
+          <span id="badgeNewLeads" class="count-badge" style="display:none;">0</span>
+        </button>
+        <button class="nav-item" data-tab="schedules">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          <span>Lịch tập (Classes)</span>
+        </button>
+        <button class="nav-item" data-tab="coaches">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Huấn luyện viên</span>
+        </button>
+        <button class="nav-item" data-tab="branches">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Chi nhánh</span>
+        </button>
+        <button class="nav-item" data-tab="pricing">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9l4-6z"/></svg>
+          <span>Gói tập & Bảng giá</span>
+        </button>
+        <button class="nav-item" data-tab="blogs">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/></svg>
+          <span>Tin tức & Blog</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Cài đặt & Bot</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar">AD</div>
+          <div class="user-info">
+            <span id="userNameDisplay" class="user-name">Quản Trị Viên</span>
+            <span class="user-role">Super Admin</span>
+          </div>
+        </div>
+        <button id="btnLogout" class="btn-icon" title="Đăng xuất">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      <!-- TOP HEADER -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle">Tổng quan Studio</h1>
+          <p id="pageSubtitle">Thống kê hoạt động, lượng khách đăng ký và vận hành</p>
+        </div>
+        <div class="topbar-actions">
+          <a href="../index.html" target="_blank" class="btn btn-outline btn-sm">
+            <span>Xem Website</span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
+          </a>
+          <button id="btnQuickAddLead" class="btn btn-primary btn-sm">
+            <span>+ Tiếp nhận Lead</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- TAB 1: DASHBOARD -->
+      <section id="tab-dashboard" class="tab-pane active">
+        <!-- KPI METRICS -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon icon-gold">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Tổng khách đăng ký</span>
+              <h3 id="statTotalLeads" class="kpi-value">0</h3>
+              <span class="kpi-sub">Toàn bộ chiến dịch</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon icon-rose">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Lead hôm nay</span>
+              <h3 id="statLeadsToday" class="kpi-value">0</h3>
+              <span class="kpi-sub">Cần gọi tư vấn sớm</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon icon-green">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Đã đến tập / Trải nghiệm</span>
+              <h3 id="statAttendedLeads" class="kpi-value">0</h3>
+              <span class="kpi-sub">Tỉ lệ có mặt thực tế</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon icon-blue">
+              <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-label">Tỷ lệ chốt gói</span>
+              <h3 id="statConversionRate" class="kpi-value">0%</h3>
+              <span id="statConvertedCount" class="kpi-sub">0 hợp đồng đã mua</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHARTS / BREAKDOWN -->
+        <div class="grid-2 mt-4">
+          <div class="card">
+            <div class="card-head">
+              <h3>Phân bổ Khách theo Chi nhánh</h3>
+              <span class="muted">3 cơ sở Muse Fitness</span>
+            </div>
+            <div id="branchBreakdownList" class="branch-stats-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h3>Nguồn truy cập & Chiến dịch</h3>
+              <span class="muted">UTM Source / Quảng cáo</span>
+            </div>
+            <div id="sourceBreakdownList" class="source-stats-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- RECENT LEADS -->
+        <div class="card mt-4">
+          <div class="card-head">
+            <div>
+              <h3>Khách hàng mới nhất cần liên hệ</h3>
+              <span class="muted">Liên hệ trong 15 phút để tăng 300% tỷ lệ chốt hẹn</span>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="switchTab('leads')">Xem tất cả Leads →</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Khách hàng</th>
+                  <th>Số điện thoại</th>
+                  <th>Chi nhánh</th>
+                  <th>Mục tiêu</th>
+                  <th>Trạng thái</th>
+                  <th>Thời gian</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="recentLeadsTable">
+                <!-- Rendered via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: LEADS CRM -->
+      <section id="tab-leads" class="tab-pane">
+        <div class="card">
+          <!-- FILTERS & ACTIONS -->
+          <div class="filters-bar">
+            <div class="filter-group">
+              <input type="text" id="leadSearchInput" placeholder="Tìm theo tên, SĐT, email..." class="search-input">
+              <select id="leadBranchFilter" class="select-input">
+                <option value="all">Tất cả chi nhánh</option>
+                <option value="Hoàng Văn Thụ">Hoàng Văn Thụ</option>
+                <option value="Lê Đức Thọ">Lê Đức Thọ</option>
+                <option value="Nguyễn Thị Thập">Nguyễn Thị Thập</option>
+              </select>
+              <select id="leadStatusFilter" class="select-input">
+                <option value="all">Tất cả trạng thái</option>
+                <option value="new">Mới tiếp nhận</option>
+                <option value="contacting">Đang liên hệ</option>
+                <option value="scheduled">Đã hẹn tập thử</option>
+                <option value="attended">Đã đến tập</option>
+                <option value="converted">Đã chốt gói</option>
+                <option value="cancelled">Huỷ / Không nghe</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button id="btnExportLeads" class="btn btn-outline btn-sm">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                <span>Xuất file Excel/CSV</span>
+              </button>
+              <button id="btnOpenNewLeadModal" class="btn btn-primary btn-sm">+ Thêm khách mới</button>
+            </div>
+          </div>
+
+          <!-- LEADS TABLE -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Họ và tên</th>
+                  <th>Số điện thoại</th>
+                  <th>Chi nhánh</th>
+                  <th>Mục tiêu / Khung giờ</th>
+                  <th>Nguồn</th>
+                  <th>Trạng thái xử lý</th>
+                  <th>Ghi chú tư vấn</th>
+                  <th>Ngày tạo</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div id="leadsEmpty" class="empty-state" style="display:none;">Không tìm thấy khách hàng nào phù hợp bộ lọc.</div>
+        </div>
+      </section>
+
+      <!-- TAB 3: SCHEDULES -->
+      <section id="tab-schedules" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Quản lý Lịch lớp cố định</h3>
+              <span class="muted">Dữ liệu này sẽ tự động đồng bộ ra trang <code>schedule.html</code></span>
+            </div>
+            <button id="btnOpenScheduleModal" class="btn btn-primary btn-sm">+ Thêm lớp mới</button>
+          </div>
+
+          <div class="filters-bar">
+            <div class="filter-group">
+              <select id="scheduleBranchFilter" class="select-input">
+                <option value="all">Tất cả chi nhánh</option>
+                <option value="Hoàng Văn Thụ">Hoàng Văn Thụ</option>
+                <option value="Lê Đức Thọ">Lê Đức Thọ</option>
+                <option value="Nguyễn Thị Thập">Nguyễn Thị Thập</option>
+              </select>
+              <select id="scheduleDisciplineFilter" class="select-input">
+                <option value="all">Tất cả bộ môn</option>
+                <option value="Boxing">Boxing</option>
+                <option value="Bodyweight–Kettlebell">Bodyweight–Kettlebell</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Khung giờ</th>
+                  <th>Tên lớp</th>
+                  <th>Bộ môn</th>
+                  <th>Level</th>
+                  <th>Chi nhánh</th>
+                  <th>Huấn luyện viên</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="schedulesTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: COACHES -->
+      <section id="tab-coaches" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Đội ngũ Huấn luyện viên</h3>
+              <span class="muted">Hiển thị tại trang <code>coaches.html</code></span>
+            </div>
+            <button id="btnOpenCoachModal" class="btn btn-primary btn-sm">+ Thêm HLV mới</button>
+          </div>
+          <div id="coachesGrid" class="coaches-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: BRANCHES -->
+      <section id="tab-branches" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Hệ thống Chi nhánh Studio</h3>
+              <span class="muted">Quản lý cơ sở vật chất, địa chỉ và hotline</span>
+            </div>
+            <button id="btnOpenBranchModal" class="btn btn-primary btn-sm">+ Thêm chi nhánh</button>
+          </div>
+          <div id="branchesGrid" class="branches-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: PRICING -->
+      <section id="tab-pricing" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Bảng giá & Gói tập</h3>
+              <span class="muted">Đồng bộ với <code>pricing.html</code> & <code>course-9-week.html</code></span>
+            </div>
+            <button id="btnOpenPricingModal" class="btn btn-primary btn-sm">+ Thêm gói mới</button>
+          </div>
+          <div id="pricingGrid" class="pricing-admin-grid">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 7: BLOGS -->
+      <section id="tab-blogs" class="tab-pane">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Tin tức & Blog chia sẻ</h3>
+              <span class="muted">Đồng bộ với <code>blog.html</code></span>
+            </div>
+            <button id="btnOpenBlogModal" class="btn btn-primary btn-sm">+ Viết bài mới</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Ảnh bìa</th>
+                  <th>Tiêu đề bài viết</th>
+                  <th>Chuyên mục</th>
+                  <th>Thời gian đọc</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày đăng</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="blogsTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 8: SETTINGS & TELEGRAM -->
+      <section id="tab-settings" class="tab-pane">
+        <div class="grid-2">
+          <!-- TELEGRAM BOT INTEGRATION -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Thông báo tức thì qua Telegram</h3>
+                <span class="muted">Bắn tin nhắn tới nhóm Sale/Lễ tân ngay khi có khách điền form</span>
+              </div>
+              <span class="badge badge-active">Realtime Alert</span>
+            </div>
+
+            <form id="telegramSettingsForm" class="form-vertical">
+              <div class="form-group">
+                <label>Bật thông báo tự động</label>
+                <div class="toggle-wrap">
+                  <input type="checkbox" id="enableTelegramNotifications" value="1">
+                  <label for="enableTelegramNotifications" class="toggle-label">Kích hoạt gửi tin nhắn Telegram khi có Lead mới</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="telegramBotToken">Telegram Bot Token</label>
+                <input type="password" id="telegramBotToken" placeholder="Nhập bot token từ @BotFather (vd: 123456789:ABCDef...)">
+                <small class="muted">Tạo bot qua @BotFather trên Telegram để nhận Token</small>
+              </div>
+
+              <div class="form-group">
+                <label for="telegramChatId">Telegram Chat ID / Group ID</label>
+                <input type="text" id="telegramChatId" placeholder="Ví dụ: -1001987654321 hoặc ID cá nhân">
+                <small class="muted">ID của nhóm lễ tân hoặc tài khoản cá nhân nhận tin nhắn</small>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">Lưu cấu hình Bot</button>
+                <button type="button" id="btnTestTelegram" class="btn btn-outline">Kiểm tra kết nối (Gửi tin thử)</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- GENERAL STUDIO SETTINGS -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Thông tin phòng tập</h3>
+                <span class="muted">Hiển thị chung toàn bộ hệ thống</span>
+              </div>
+            </div>
+
+            <form id="studioSettingsForm" class="form-vertical">
+              <div class="form-group">
+                <label for="studioName">Tên phòng tập</label>
+                <input type="text" id="studioName" value="Muse Fitness Studio">
+              </div>
+
+              <div class="form-group">
+                <label for="studioHotline">Hotline liên hệ</label>
+                <input type="text" id="studioHotline" value="1900 299 991">
+              </div>
+
+              <div class="form-group">
+                <label for="studioEmail">Email chăm sóc khách hàng</label>
+                <input type="email" id="studioEmail" value="contact@musefitnessstudio.com">
+              </div>
+
+              <div class="form-group">
+                <label for="studioHours">Giờ hoạt động</label>
+                <input type="text" id="studioHours" value="6:00 – 21:00 (Thứ 2 – Chủ Nhật)">
+              </div>
+
+              <button type="submit" class="btn btn-primary">Lưu thông tin phòng tập</button>
+            </form>
+          </div>
+
+          <!-- CLOUDINARY INTEGRATION -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Lưu trữ & Tối ưu Ảnh (Cloudinary)</h3>
+                <span class="muted">Tự động nén WebP và lưu trên CDN toàn cầu</span>
+              </div>
+              <span id="badgeCloudinaryStatus" class="badge-tag">Chưa kết nối</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <p style="font-size:13px;color:var(--text-muted)">
+                Điền <code>CLOUDINARY_CLOUD_NAME</code>, <code>CLOUDINARY_API_KEY</code>, <code>CLOUDINARY_API_SECRET</code> trong file <code>.env</code> để kích hoạt.
+              </p>
+              <div class="info-row">
+                <strong>Cloud Name:</strong>
+                <span id="cldNameDisplay" class="muted">Chưa cấu hình</span>
+              </div>
+              <div class="btn-group">
+                <button type="button" id="btnTestCloudinary" class="btn btn-outline btn-sm">Kiểm tra kết nối Cloudinary</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUPABASE POSTGRESQL INTEGRATION -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <h3>Cơ sở Dữ liệu Đám mây (Supabase)</h3>
+                <span class="muted">PostgreSQL trên Cloud miễn phí & an toàn</span>
+              </div>
+              <span id="badgeSupabaseStatus" class="badge-tag">Chưa kết nối</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <p style="font-size:13px;color:var(--text-muted)">
+                Điền <code>SUPABASE_URL</code> và <code>SUPABASE_SERVICE_ROLE_KEY</code> trong file <code>.env</code> để kích hoạt.
+              </p>
+              <div class="info-row">
+                <strong>Supabase Project URL:</strong>
+                <span id="sbUrlDisplay" class="muted">Chưa cấu hình</span>
+              </div>
+              <div class="btn-group">
+                <button type="button" id="btnTestSupabase" class="btn btn-outline btn-sm">Kiểm tra kết nối Supabase</button>
+                <button type="button" id="btnSyncSupabase" class="btn btn-primary btn-sm">Đồng bộ dữ liệu mẫu lên Supabase (1-Click)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- MODAL: LEAD DETAIL / NOTES -->
+  <div id="leadDetailModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Chi tiết Khách hàng & Nhật ký chăm sóc</h3>
+        <button class="modal-close" onclick="closeModal('leadDetailModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="lead-info-summary">
+          <div class="info-row"><strong>Họ và tên:</strong> <span id="mLeadName"></span></div>
+          <div class="info-row"><strong>Số điện thoại:</strong> <span id="mLeadPhone"></span></div>
+          <div class="info-row"><strong>Email:</strong> <span id="mLeadEmail"></span></div>
+          <div class="info-row"><strong>Chi nhánh:</strong> <span id="mLeadBranch"></span></div>
+          <div class="info-row"><strong>Mục tiêu:</strong> <span id="mLeadGoal"></span></div>
+          <div class="info-row"><strong>Khung giờ hẹn:</strong> <span id="mLeadSlot"></span></div>
+          <div class="info-row"><strong>Ghi chú khách điền:</strong> <span id="mLeadCustomerNote"></span></div>
+          <div class="info-row"><strong>Nguồn / Chiến dịch:</strong> <span id="mLeadAttribution"></span></div>
+          <div class="info-row"><strong>Thời gian đăng ký:</strong> <span id="mLeadCreatedAt"></span></div>
+        </div>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--line);">
+
+        <form id="leadUpdateForm">
+          <input type="hidden" id="mLeadId">
+          <div class="form-group">
+            <label for="mLeadStatus">Trạng thái xử lý Lead</label>
+            <select id="mLeadStatus" class="select-input">
+              <option value="new">Mới tiếp nhận (Chưa gọi)</option>
+              <option value="contacting">Đang liên hệ / Đã gọi lần 1</option>
+              <option value="scheduled">Đã hẹn lịch tập thử</option>
+              <option value="attended">Đã đến tập trải nghiệm</option>
+              <option value="converted">Đã chốt hợp đồng / Mua gói tập</option>
+              <option value="cancelled">Huỷ / Không nghe máy / Sai số</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="mCounselorNotes">Nhật ký tư vấn của Sale/Lễ tân</label>
+            <textarea id="mCounselorNotes" rows="4" placeholder="Ghi chú kết quả cuộc gọi, nhu cầu cụ thể của nàng, thời gian hẹn qua cơ sở..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Cập nhật thông tin chăm sóc</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MANUAL ADD LEAD -->
+  <div id="newLeadModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Tiếp nhận Khách hàng mới (Thủ công / Hotline)</h3>
+        <button class="modal-close" onclick="closeModal('newLeadModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="manualLeadForm">
+          <div class="form-group">
+            <label>Họ và tên *</label>
+            <input type="text" id="manLeadName" required placeholder="Tên của khách">
+          </div>
+          <div class="form-group">
+            <label>Số điện thoại *</label>
+            <input type="tel" id="manLeadPhone" required placeholder="09xx xxx xxx">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="manLeadEmail" placeholder="khach@email.com">
+          </div>
+          <div class="form-group">
+            <label>Chi nhánh</label>
+            <select id="manLeadBranch" class="select-input">
+              <option value="Hoàng Văn Thụ">Hoàng Văn Thụ</option>
+              <option value="Lê Đức Thọ">Lê Đức Thọ</option>
+              <option value="Nguyễn Thị Thập">Nguyễn Thị Thập</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mục tiêu tập luyện</label>
+            <select id="manLeadGoal" class="select-input">
+              <option value="Thay đổi vóc dáng">Thay đổi vóc dáng</option>
+              <option value="Cải thiện sức khoẻ">Cải thiện sức khoẻ</option>
+              <option value="Tư vấn Hành Trình 9 Tuần">Tư vấn Hành Trình 9 Tuần</option>
+              <option value="Tập Bodyweight – Kettlebell">Tập Bodyweight – Kettlebell</option>
+              <option value="Tư vấn PT 1-1">Tư vấn PT 1-1</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Khung giờ mong muốn</label>
+            <input type="text" id="manLeadSlot" placeholder="Ví dụ: Sáng (6h – 9h)">
+          </div>
+          <div class="form-group">
+            <label>Ghi chú ban đầu</label>
+            <textarea id="manLeadNote" rows="2" placeholder="Ghi chú thêm..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Lưu khách hàng</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SCHEDULE FORM -->
+  <div id="scheduleModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="scheduleModalTitle">Thêm Lớp tập Lịch cố định</h3>
+        <button class="modal-close" onclick="closeModal('scheduleModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="scheduleForm">
+          <input type="hidden" id="schId">
+          <div class="form-group">
+            <label>Chi nhánh</label>
+            <select id="schBranch" class="select-input" required>
+              <option value="Hoàng Văn Thụ">Hoàng Văn Thụ</option>
+              <option value="Lê Đức Thọ">Lê Đức Thọ</option>
+              <option value="Nguyễn Thị Thập">Nguyễn Thị Thập</option>
+            </select>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Buổi trong ngày</label>
+              <select id="schPeriod" class="select-input">
+                <option value="morning">Sáng</option>
+                <option value="noon">Trưa</option>
+                <option value="afternoon">Chiều</option>
+                <option value="evening">Tối</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Khung giờ cụ thể</label>
+              <input type="text" id="schTime" required placeholder="06:30 – 07:30">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Bộ môn</label>
+              <select id="schDiscipline" class="select-input">
+                <option value="Boxing">Boxing</option>
+                <option value="Bodyweight–Kettlebell">Bodyweight–Kettlebell</option>
+                <option value="Yoga & Mobility">Yoga & Mobility</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Level</label>
+              <select id="schLevel" class="select-input">
+                <option value="lv1">Level 1 (Người mới)</option>
+                <option value="lv2">Level 2 (Nâng cao)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Tên lớp hiển thị</label>
+            <input type="text" id="schTitle" required placeholder="Boxing">
+          </div>
+          <div class="form-group">
+            <label>Huấn luyện viên phụ trách</label>
+            <input type="text" id="schCoach" placeholder="Coach Tuấn Kiệt">
+          </div>
+          <div class="form-group">
+            <label>Mô tả lớp</label>
+            <textarea id="schDesc" rows="2" placeholder="Nền tảng cơ bản — đánh lại từ đầu, từng động tác đúng kỹ thuật."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Lưu lịch lớp</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: COACH FORM -->
+  <div id="coachModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="coachModalTitle">Thêm Huấn luyện viên</h3>
+        <button class="modal-close" onclick="closeModal('coachModal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="coachForm">
+          <input type="hidden" id="coachId">
+          <div class="form-group">
+            <label>Tên Huấn luyện viên *</label>
+            <input type="text" id="coachName" required placeholder="Coach Thuỳ Dương">
+          </div>
+          <div class="form-group">
+            <label>Chức danh / Vị trí *</label>
+            <input type="text" id="coachTitle" required placeholder="HLV Bodyweight – Kettlebell">
+          </div>
+          <div class="form-group">
+            <label>Tag chuyên môn</label>
+            <input type="text" id="coachTag" placeholder="Bodyweight · Kettlebell">
+          </div>
+          <div class="form-group">
+            <label>Đường dẫn ảnh đại diện (URL)</label>
+            <input type="text" id="coachPhoto" placeholder="assets/photo-coach.jpg">
+          </div>
+          <div class="form-group">
+            <label>Kỹ năng nổi bật (ngăn cách bởi dấu phẩy)</label>
+            <input type="text" id="coachSpecs" placeholder="Gym nền tảng, Form check, Giảm mỡ">
+          </div>
+          <div class="form-group">
+            <label>Tiểu sử / Giới thiệu</label>
+            <textarea id="coachBio" rows="3" placeholder="Theo sát kỹ thuật nền, giúp nàng tự tin..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Lưu Huấn luyện viên</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
